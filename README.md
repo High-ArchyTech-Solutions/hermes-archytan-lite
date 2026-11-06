@@ -1,5 +1,7 @@
 # Archytan Lite for Hermes
 
+![Archytan Lite for Hermes: every action Hermes takes, decided outside the agent](docs/banner.png)
+
 A Hermes plugin that puts every tool call in front of
 [Archytan Lite](https://high-archy.tech/lite), an authorization gate that
 runs outside Hermes with its own signing key. Hermes asks, the gate
