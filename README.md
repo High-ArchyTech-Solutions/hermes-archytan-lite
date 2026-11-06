@@ -12,9 +12,10 @@ later without trusting Hermes or this plugin.
 ```
 Hermes wants to run:   terminal  git push origin main
 Plugin asks the gate:  shell.run on git/push
-Archytan Lite:         BLOCK  (receipt #212, trace trc_7f3a...)
+Archytan Lite:         BLOCK, signed and chained into the receipt log
 Hermes sees:           Archytan Lite refused this call: shell.run on git/push
-                       (the policy doesn't allow it). Nothing ran. ...
+                       (the policy doesn't allow it, or this action's limit
+                       per minute was reached). Nothing ran. Trace trc_3da5...
 ```
 
 ## Why a gate outside the agent
