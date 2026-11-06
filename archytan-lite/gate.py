@@ -6,6 +6,11 @@ back ALLOW is each single-use capability redeemed, immediately before the
 tool runs. The client treats anything other than a verified ALLOW that
 matches the request as a denial (a timeout, a refused connection, a bad
 signature, a receipt for some other request), and so does this module.
+
+lite_client.py is that client (archytan-lite 2.1.1 on PyPI, MIT, by the
+same authors) copied byte for byte, so the plugin installs with nothing to
+resolve; tests/test_vendored_client.py holds it to the published file. It
+needs only httpx and cryptography, which Hermes already ships.
 """
 
 from __future__ import annotations
@@ -13,8 +18,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 
-from archytan_lite import authorize, redeem_capability
-
+from .lite_client import authorize, redeem_capability
 from .mapping import Check
 
 

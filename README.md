@@ -266,4 +266,8 @@ with `scripts/test-in-hermes.sh /path/to/hermes-agent`.
 ## License
 
 MIT. The plugin calls the gate through the
-[official Python client](https://pypi.org/project/archytan-lite/), also MIT.
+[official Python client](https://pypi.org/project/archytan-lite/), also MIT
+and by the same authors. `archytan-lite/lite_client.py` is that client's
+2.1.1 `client.py` copied byte for byte (a test holds it to the published
+file), so installing the plugin has no Python dependencies to resolve: the
+client needs only `httpx` and `cryptography`, which Hermes already ships.
