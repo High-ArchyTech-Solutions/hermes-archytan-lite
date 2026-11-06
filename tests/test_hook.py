@@ -112,6 +112,9 @@ def test_home_setting_resolves_tilde_in_a_container_workspace(hook):
 def test_a_home_in_another_path_style_is_ignored(hook):
     hook.ctx.settings["home"] = "C:\\Users\\someone"
     assert blocked(call(hook, "read_file", {"path": "~/notes.txt"}))
+    # The plugin drops it itself; it doesn't rely on the gate refusing the
+    # mixed-separator path a Windows home would produce under /home/...
+    assert plugin_pkg.Plugin(hook.ctx).context().home is None
 
 
 def test_an_internal_error_refuses(hook, monkeypatch):

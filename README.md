@@ -53,7 +53,7 @@ You need Hermes 0.22.6 or later and Docker.
 
 ```sh
 # 1. Install and enable the plugin
-hermes plugins install archytan-lite --enable
+hermes plugins install High-ArchyTech-Solutions/hermes-archytan-lite/archytan-lite --enable
 
 # 2. Pull the gate image yourself (Archytan Lite 2.7.1, pinned by digest)
 docker pull ghcr.io/high-archytech-solutions/archytan-lite@sha256:205703a7fc67a9e96aa0930fd9dda83fe2b9694b724b13dea8c1854948e82071
