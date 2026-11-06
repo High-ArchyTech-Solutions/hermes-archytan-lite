@@ -22,7 +22,10 @@ def _file(data_dir: Path) -> Path:
     return data_dir / "decisions.jsonl"
 
 
-def record(data_dir: Path, tool_name: str, session: str, decisions) -> None:
+def record(data_dir: Path, tool_name: str, session: str, decisions, ran: bool = True) -> None:
+    """``ran`` is whether the tool call went ahead. When it didn't, the
+    checks that were allowed are marked unused: their permissions were never
+    spent, because another check in the same call was refused."""
     rows = []
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     for d in decisions:
@@ -30,6 +33,7 @@ def record(data_dir: Path, tool_name: str, session: str, decisions) -> None:
             "ts": now, "session": session, "tool": tool_name,
             "action": d.check.action, "resource": d.check.resource_id,
             "decision": "ALLOW" if d.allowed else "BLOCK",
+            "unused": bool(d.allowed and not ran),
             "reason": d.reason, "trace_id": d.trace_id, "seq": d.seq,
         }, ensure_ascii=False))
     if not rows:

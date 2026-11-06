@@ -203,6 +203,15 @@ Be clear about these before relying on it:
   `modify` result. A plugin that rewrites a path after this one checked it
   would make the tool act on something unchecked. Don't combine this with
   plugins that rewrite tool arguments.
+- **If Hermes can't load the plugin, nothing is gated.** A refusal from the
+  plugin needs the plugin to be running; a plugin Hermes skipped at load
+  time can't refuse anything. After installing, check that
+  `hermes plugins list` shows it enabled and that `/archytan` answers in a
+  chat. On Windows, installing from an elevated (administrator) shell, such
+  as an SSH session, can leave the plugin folder readable only by
+  administrators; the gateway then logs `Skipping unreadable plugin
+  directory`. Grant your own account access to the folder, or install from
+  a normal shell.
 - **It needs Hermes's default in-process plugins.** Under
   `plugins.isolation: host` the `hermes archytan` commands aren't
   available.

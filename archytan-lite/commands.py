@@ -25,12 +25,23 @@ def _fmt_rows(rows: list[dict]) -> str:
         return "No decisions recorded yet."
     out = []
     for r in rows:
-        ts = str(r.get("ts", ""))[11:19]
+        ts = _local_time(str(r.get("ts", "")))
         seq = f" #{r['seq']}" if r.get("seq") is not None else ""
         trace = f" {r['trace_id']}" if r.get("trace_id") else ""
+        unused = " (unused: the call was refused)" if r.get("unused") else ""
         out.append(f"{ts} {r.get('decision', '?'):5} {r.get('action', '')} {r.get('resource', '')}"
-                   f" [{r.get('tool', '')}]{seq}{trace}")
+                   f" [{r.get('tool', '')}]{seq}{trace}{unused}")
     return "\n".join(out)
+
+
+def _local_time(ts: str) -> str:
+    """HH:MM:SS on this machine's clock for a UTC timestamp from the journal."""
+    import calendar
+    import time
+    try:
+        return time.strftime("%H:%M:%S", time.localtime(calendar.timegm(time.strptime(ts, "%Y-%m-%dT%H:%M:%SZ"))))
+    except ValueError:
+        return ts[11:19]
 
 
 def _health(plugin) -> str:

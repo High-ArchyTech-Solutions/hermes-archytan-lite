@@ -137,3 +137,14 @@ def test_decisions_are_journaled(hook, tmp_path):
     rows = plugin_pkg.journal.tail(tmp_path, 5)
     assert rows[-1]["decision"] == "BLOCK" and rows[-1]["resource"] == "git/push"
     assert "command" not in rows[-1] and rows[-1]["trace_id"].startswith("trc_")
+
+
+def test_allowed_checks_in_a_refused_call_are_marked_unused(hook, tmp_path):
+    call(hook, "terminal", {"command": "cat /etc/passwd"})
+    rows = plugin_pkg.journal.tail(tmp_path, 2)
+    assert [(r["resource"], r["decision"], r["unused"]) for r in rows] == [
+        ("cat", "ALLOW", True), ("/etc/passwd", "BLOCK", False)]
+    text = plugin_pkg.commands._fmt_rows(rows)
+    assert "cat [terminal]" in text and "(unused: the call was refused)" in text
+    call(hook, "terminal", {"command": "git status"})
+    assert plugin_pkg.journal.tail(tmp_path, 1)[0]["unused"] is False

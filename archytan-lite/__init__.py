@@ -114,7 +114,7 @@ class Plugin:
         session = str(kw.get("session_id") or task_id or "")
         actor = f"hermes:{session or 'no-session'}"
         outcome = gate.decide(plan.checks, actor, self.settings(), _traceparent(session, kw))
-        journal.record(_data_dir(), tool_name, session, outcome.decisions)
+        journal.record(_data_dir(), tool_name, session, outcome.decisions, ran=outcome.allowed)
         if not outcome.allowed:
             return {"action": "block", "message": refusal(tool_name, outcome.refused)}
         if plan.rewrite:
