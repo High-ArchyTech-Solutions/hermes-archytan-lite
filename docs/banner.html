@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; }
+  body { width: 1280px; height: 640px; background: #0f0f0e; color: #efeee8;
+         font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; overflow: hidden; }
+  .wrap { padding: 64px 72px; box-sizing: border-box; height: 100%; display: flex; flex-direction: column; }
+  .kicker { font: 500 22px/1 Consolas, "IBM Plex Mono", monospace; color: #a5a399; }
+  h1 { font-size: 64px; font-weight: 650; letter-spacing: -0.03em; margin: 18px 0 10px; line-height: 1.02; }
+  p { font-size: 26px; color: #cfcdc4; margin: 0 0 34px; max-width: 1050px; line-height: 1.35; }
+  .feed { border: 1px solid #2b2a26; background: #161614; border-radius: 16px; overflow: hidden;
+          font: 20px/1.45 Consolas, "IBM Plex Mono", monospace; }
+  .row { display: grid; grid-template-columns: 470px 120px 1fr; gap: 18px; padding: 13px 24px;
+         border-top: 1px solid #2b2a26; align-items: center; }
+  .row:first-child { border-top: 0; }
+  .tool { color: #a5a399; } .tool b { color: #efeee8; font-weight: 500; }
+  .tag { border-radius: 7px; padding: 2px 10px; color: #0f0f0e; font-weight: 600; font-size: 17px; text-align: center; }
+  .allow { background: #74c99d; } .block { background: #ec8c4f; }
+  .why { color: #75736a; font-size: 18px; }
+</style></head>
+<body><div class="wrap">
+  <div class="kicker">Hermes plugin · archytan-lite</div>
+  <h1>Every action Hermes takes, decided outside the agent.</h1>
+  <p>Archytan Lite checks each call against your policy, spends a single-use permission right before it runs, and signs every decision into a chain you can verify.</p>
+  <div class="feed">
+    <div class="row"><span class="tool"><b>terminal</b> git commit -m "fix"</span><span class="tag allow">ALLOW</span><span class="why">git/commit · receipt #211</span></div>
+    <div class="row"><span class="tool"><b>terminal</b> git push origin main</span><span class="tag block">BLOCK</span><span class="why">git/push not granted · #212 · /yolo on</span></div>
+    <div class="row"><span class="tool"><b>read_file</b> ~/.ssh/id_ed25519</span><span class="tag block">BLOCK</span><span class="why">outside the workspace · #213</span></div>
+    <div class="row"><span class="tool"><b>execute_code</b> os.system(...)</span><span class="tag block">BLOCK</span><span class="why">code.run not granted · #214</span></div>
+  </div>
+</div></body></html>

@@ -1,0 +1,60 @@
+name: archytan-lite
+version: 0.1.0
+manifest_version: 2
+api_version: 1
+description: >-
+  Every Hermes tool call is decided by Archytan Lite, a gate that runs outside Hermes with its own
+  signing key. Each call becomes one or more checks (file paths, programs, hosts, tools), all must be
+  ALLOWed, and each ALLOW is a single-use permission spent just before the tool runs. Refusals hold under
+  /yolo. Every decision is an Ed25519-signed, hash-chained receipt you can verify offline.
+author: High ArchyTech Solutions
+license: MIT
+homepage: https://github.com/High-ArchyTech-Solutions/hermes-archytan-lite
+tags: [security, policy, audit, authorization]
+requires_hermes: ">=0.22.6"
+provides_tools: []
+provides_hooks:
+  - pre_tool_call
+config_schema:
+  workspace:
+    type: str
+    default: ""
+    label: Workspace
+    description: The folder Hermes may read and write. Relative paths resolve here. Set by `hermes archytan setup`.
+  home:
+    type: str
+    default: ""
+    label: Home directory
+    description: What ~ means in the agent's paths. Empty means your own home, or nothing for a container workspace, where ~ paths are then refused.
+  gate_url:
+    type: str
+    default: "http://127.0.0.1:8431"
+    label: Gate URL
+  gate_public_key_hex:
+    type: str
+    default: ""
+    label: Gate public key
+    description: The Ed25519 key every receipt must verify against. Set by setup.
+  caller_token:
+    type: secret
+    env: ARCHYTAN_LITE_HERMES_TOKEN
+    label: Caller token
+    description: Hermes's credential at the gate. Its role comes from the gate's callers file, never from Hermes.
+  ungated_tools:
+    type: list
+    default: [clarify, todo_list, skills_list, skill_view, session_search, kanban_show, kanban_list, kanban_attachments, read_terminal, read_window_below, set_theme, show_tip, gui_tour, focus_pane, react_to_message, setup_beat]
+    label: Tools that skip the gate
+    description: Tools that only read Hermes's own state or talk to you. Every other tool is checked.
+  timeout_seconds:
+    type: float
+    default: 2.0
+    description: How long to wait for the gate. No answer counts as a refusal.
+  expected_policy_sha256:
+    type: str
+    default: ""
+    description: When set, an ALLOW counts only if its receipt says the gate decided under exactly this policy file.
+  resolve_symlinks:
+    type: str
+    choices: [auto, "off"]
+    default: auto
+    description: Follow symlinks on this machine before checking a path.
