@@ -58,8 +58,8 @@ You need Hermes 0.22.6 or later and Docker.
 # 1. Install and enable the plugin
 hermes plugins install High-ArchyTech-Solutions/hermes-archytan-lite/archytan-lite --enable
 
-# 2. Pull the gate image yourself (Archytan Lite 2.7.1, pinned by digest)
-docker pull ghcr.io/high-archytech-solutions/archytan-lite@sha256:205703a7fc67a9e96aa0930fd9dda83fe2b9694b724b13dea8c1854948e82071
+# 2. Pull the gate image yourself (Archytan Lite 2.7.3, pinned by digest)
+docker pull ghcr.io/high-archytech-solutions/archytan-lite@sha256:699cc1b1f2a4e40d94d095e7256e0fac3d94bddd8f5672c9750f9b4b7ece64e9
 
 # 3. Start the gate for one project folder
 hermes archytan setup --workspace /path/to/your/project
@@ -236,8 +236,8 @@ Be clear about these before relying on it:
   free to run under its
   [Community license](https://github.com/High-ArchyTech-Solutions/archytan-lite-community/blob/main/ARCHYTAN-LITE-LICENSE.txt).
   It runs from the image
-  `ghcr.io/high-archytech-solutions/archytan-lite@sha256:205703a7fc67a9e96aa0930fd9dda83fe2b9694b724b13dea8c1854948e82071`
-  (2.7.1, linux/amd64 and linux/arm64), which the plugin never pulls on its
+  `ghcr.io/high-archytech-solutions/archytan-lite@sha256:699cc1b1f2a4e40d94d095e7256e0fac3d94bddd8f5672c9750f9b4b7ece64e9`
+  (2.7.3, linux/amd64 and linux/arm64), which the plugin never pulls on its
   own: you pull it, or pass `--pull` to setup. Its public home, release
   notes and schemas are
   [archytan-lite-community](https://github.com/High-ArchyTech-Solutions/archytan-lite-community).

@@ -14,9 +14,9 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-IMAGE_VERSION = "2.7.1"
+IMAGE_VERSION = "2.7.3"
 IMAGE = ("ghcr.io/high-archytech-solutions/archytan-lite@sha256:"
-         "205703a7fc67a9e96aa0930fd9dda83fe2b9694b724b13dea8c1854948e82071")
+         "699cc1b1f2a4e40d94d095e7256e0fac3d94bddd8f5672c9750f9b4b7ece64e9")
 CONTAINER = "archytan-hermes"
 VOLUME = "archytan-hermes-data"
 DEFAULT_PORT = 8431
