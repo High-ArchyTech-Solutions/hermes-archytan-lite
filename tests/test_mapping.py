@@ -184,3 +184,15 @@ def test_text_to_speech_output_path_is_a_write():
 
 def test_kanban_writes_are_checked():
     assert checks("kanban_create", {"title": "x"}) == [("kanban.write", "tool", "kanban_create")]
+
+
+def test_a_planted_program_is_its_own_request_and_the_starter_policy_refuses_it():
+    got = checks("terminal", {"command": "./ls -la"})
+    assert ("shell.run", "program", WS + "/ls") in got
+    assert ("shell.run", "program", "ls") not in got
+    assert WS + "/ls" not in plugin_pkg.policy.STARTER_PROGRAMS
+    # The id is a name the gate accepts, so the gate refuses it by policy
+    # rather than the plugin turning it into "unresolved".
+    win = mapping.Context(workspace="C:\\ws", style="windows", home=None, resolve_links=False)
+    assert ("shell.run", "program", "C:/ws/ls.exe") in checks("terminal", {"command": "./ls.exe"}, win)
+    assert ("shell.run", "program", "ls") in checks("terminal", {"command": "/usr/bin/ls -la"})

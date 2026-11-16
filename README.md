@@ -100,7 +100,7 @@ of them must be allowed.
 |---|---|---|
 | `read_file`, `search_files` | `file.read` | the absolute path |
 | `write_file`, `patch` | `file.write` | the absolute path; for a multi-file V4A patch, every file it adds, updates, deletes or moves to |
-| `terminal` | `shell.run` | each program, as `git/push` for tools with subcommands |
+| `terminal` | `shell.run` | each program, as `git/push` for tools with subcommands; a program run by path from outside the system's program folders (`./build.sh`, `/tmp/ls`) as its full path |
 | | `file.read` / `file.write` | every path a command names, its redirects, its working directory |
 | | `web.fetch` | every URL a command names |
 | | `shell.env` | each `NAME=value` set in front of a command |
@@ -184,6 +184,11 @@ role. The format is documented in the
 [Archytan Lite README](https://github.com/High-ArchyTech-Solutions/archytan-lite-community#your-own-policy)
 and has a [JSON Schema](https://high-archy.tech/schemas/policy.v1.json).
 
+To let Hermes run a script of yours, grant its full path
+(`"/home/you/project/scripts/test.sh"`). A grant for a name (`ls`) covers
+only the system's program of that name, in `/usr/bin` and the other system
+program folders, never a file called `ls` somewhere Hermes can write.
+
 Granting an interpreter (`python`, `node`, `bash`) grants everything it can
 do. The gate sees which program runs, not what the program does.
 
@@ -197,6 +202,9 @@ Be clear about these before relying on it:
   when the workspace is on this machine. In a container workspace (paths
   the host doesn't have) the check is lexical, so a symlink inside the
   workspace that points out of it isn't caught there.
+- **A bare program name runs whatever the shell finds first on PATH.** If
+  PATH includes a folder Hermes can write to, a file there could pass for a
+  granted program. Keep such folders off PATH.
 - **A command's bare file names are assumed to be in its working
   directory**, which is checked. A program that opens other files on its
   own (a config file it reads by default) isn't seen.

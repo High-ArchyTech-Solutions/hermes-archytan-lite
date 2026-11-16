@@ -83,10 +83,50 @@ def test_quoting_does_not_hide_the_program():
     assert ("program", "rm") in touches("r\\m -rf x")
 
 
-def test_program_by_path_is_checked_and_named_by_basename():
+def test_system_program_by_path_keeps_its_name():
     t = touches("/usr/bin/curl https://x.example")
     assert ("program", "curl") in t and ("read", "/usr/bin/curl") in t
-    assert ("program", "evil.sh") in touches("./evil.sh")
+    assert ("program", "ls") in touches("/bin/ls")
+    assert ("program", "git/status") in touches("/usr/bin/git status")
+
+
+# A file the agent can write must never pass for a system program of the
+# same name: a grant for `ls` allows the system's ls, not a script saved as
+# ./ls (reported by the IMD swarm's review of the plugin hackathon).
+@pytest.mark.parametrize("cmd, program", [
+    ("./ls", WS + "/ls"),
+    ("./ls -la", WS + "/ls"),
+    ("tools/ls", WS + "/tools/ls"),
+    ("../ls", "/home/hermes/ls"),
+    ("~/bin/ls", "/home/hermes/bin/ls"),
+    ("/tmp/ls", "/tmp/ls"),
+    ("/usr/bin/../../tmp/ls", "/tmp/ls"),
+    ("/usr/bin/sub/ls", "/usr/bin/sub/ls"),
+    ("./evil.sh", WS + "/evil.sh"),
+])
+def test_program_by_path_outside_system_folders_is_named_by_its_path(cmd, program):
+    t = touches(cmd)
+    assert ("program", program) in t
+    assert ("program", "ls") not in t
+
+
+def test_a_planted_subcommand_program_is_not_the_real_one():
+    t = touches("./git status")
+    assert ("program", WS + "/git") in t
+    assert not any(kind == "program" and value.startswith("git") for kind, value in t)
+
+
+def test_program_by_path_on_windows():
+    # Hermes runs commands in Git Bash on Windows, where a backslash
+    # escapes the next character unless it's quoted.
+    win = dict(cwd="C:\\ws", style="windows", home="C:\\Users\\me")
+    assert ("program", "where") in touches("/c/Windows/System32/where.exe x", **win)
+    assert ("program", "where") in touches("'C:\\Windows\\System32\\WHERE.EXE' x", **win)
+    assert ("program", "ls") in touches('"/c/Program Files/Git/usr/bin/ls.exe"', **win)
+    assert ("program", "C:/ws/ls.exe") in touches("./ls.exe", **win)
+    assert ("program", "C:/ws/ls") in touches("/c/ws/ls", **win)
+    assert ("program", "C:/Users/me/ls.exe") in touches("~/ls.exe", **win)
+    assert ("program", "C:/Windows/Temp/ls.exe") in touches("/c/Windows/Temp/ls.exe", **win)
 
 
 @pytest.mark.parametrize("cmd", [

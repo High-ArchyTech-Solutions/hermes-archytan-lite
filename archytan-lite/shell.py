@@ -212,13 +212,45 @@ def _split(tokens: list[Word | Op]) -> list[tuple[list[Word | Op], str]]:
     return [(c, sep) for c, sep in out if c]
 
 
-def _program_id(word: str, style: str) -> str:
+# Folders that hold the system's own programs. A program run by its full
+# path from one of these is the program its name runs, so `/usr/bin/git`
+# is `git`. A path anywhere else (the workspace, home, /tmp) names a file
+# Hermes or anyone else could have written, so the path itself is the
+# program's identity: a script saved as ./ls is not the system's ls and
+# must not be allowed by a grant for `ls`.
+_SYSTEM_PROGRAM_DIRS_POSIX = frozenset({
+    "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin",
+    "/opt/homebrew/bin",
+})
+_SYSTEM_PROGRAM_DIRS_WINDOWS = frozenset({  # compared in lower case
+    "c:\\windows\\system32", "c:\\program files\\git\\usr\\bin",
+    "c:\\program files\\git\\bin", "c:\\program files\\git\\mingw64\\bin",
+})
+
+
+def _program_id(word: str, style: str, resolved: str | None = None) -> str:
+    """The name the gate sees for the program ``word`` runs.
+
+    A bare name (``ls``) is the program the shell finds on PATH. A path
+    (``./ls``, ``/tmp/ls``, ``~/bin/ls``) keeps its name only when it
+    resolves into a system program folder; otherwise the id is the resolved
+    path, which only a grant naming that exact file allows.
+    """
     base = ntpath.basename(word) if style == "windows" else posixpath.basename(word)
     if style == "windows":
         base = base.lower()
         if base.endswith(".exe"):
             base = base[:-4]
-    return base
+    if resolved is None:
+        return base
+    if style == "windows":
+        if ntpath.dirname(resolved).lower() in _SYSTEM_PROGRAM_DIRS_WINDOWS:
+            return base
+        # Forward slashes: the gate doesn't accept a backslash in a name.
+        return resolved.replace("\\", "/")
+    if posixpath.dirname(resolved) in _SYSTEM_PROGRAM_DIRS_POSIX:
+        return base
+    return resolved
 
 
 def _path_like(text: str, style: str) -> bool:
@@ -325,9 +357,11 @@ def read_command(cmd: str, cwd: str, style: str, home: str | None = None) -> Rea
             continue
         leading = False
 
+        resolved = None
         if _path_like(program.text, style) or program.tilde:
-            r.add("read", r.resolve(program))
-        pid = _program_id(program.text, style)
+            resolved = r.resolve(program)
+            r.add("read", resolved)
+        pid = _program_id(program.text, style, resolved)
         if pid in SUBCOMMAND_PROGRAMS:
             if pid == "git":
                 while len(args) >= 2 and args[0].text == "-C":
